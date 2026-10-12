@@ -66,7 +66,7 @@ The service exposes:
 npm run set:telegram-webhook -- https://your-domain.com/webhooks/telegram
 ```
 
-If you set `TELEGRAM_WEBHOOK_SECRET`, the script will include it when registering the webhook.
+`TELEGRAM_WEBHOOK_SECRET` is required (32–256 characters using letters, numbers, underscores, or hyphens). The script includes it when registering the webhook; unverified webhook requests are rejected.
 
 ### 2. Google Calendar
 
@@ -126,3 +126,8 @@ Search the web for latest OpenAI API pricing changes
 3. Calendar access is read-only in v1.
 4. Slack is outbound-only in v1.
 5. Web search responses always include sources.
+
+
+## Required security configuration
+
+Generate fresh credentials locally (for example, `python3 -c "import secrets; print(secrets.token_urlsafe(48))"`). Never commit the resulting values. Telegram requires TELEGRAM_WEBHOOK_SECRET and registration of that secret with setWebhook. Services reject missing security configuration. Use HTTPS for any access beyond localhost. Rotate any previously deployed default credentials and rebuild/redeploy after applying these changes.

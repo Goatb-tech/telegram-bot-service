@@ -1,3 +1,5 @@
+import { timingSafeEqual } from "node:crypto";
+
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 import { isAllowedTelegramSender } from "../auth/allowlist.js";
@@ -15,9 +17,11 @@ interface TelegramRouteDeps {
 
 export async function registerTelegramRoutes(server: FastifyInstance, deps: TelegramRouteDeps): Promise<void> {
   server.post("/webhooks/telegram", async (request: FastifyRequest<{ Body: TelegramUpdate }>, reply: FastifyReply) => {
-    if (deps.env.TELEGRAM_WEBHOOK_SECRET) {
+    {
       const secret = request.headers["x-telegram-bot-api-secret-token"];
-      if (secret !== deps.env.TELEGRAM_WEBHOOK_SECRET) {
+      const expected = deps.env.TELEGRAM_WEBHOOK_SECRET;
+      if (typeof secret !== "string" || !expected || Buffer.byteLength(secret) !== Buffer.byteLength(expected)
+          || !timingSafeEqual(Buffer.from(secret), Buffer.from(expected))) {
         await deps.db.insertAuditLog({
           service: "telegram",
           action: "webhook_secret_check",
@@ -104,7 +108,7 @@ async function handleTelegramMessage(server: FastifyInstance, deps: TelegramRout
       metadata: result.metadata
     });
   } catch (error) {
-    const detail = error instanceof Error ? error.message : "Unknown orchestrator error";
+    const detail = "Orchestrator request failed";
 
     server.log.error({ err: error, chatId, userId }, "Telegram message handling failed");
     await deps.db.insertAuditLog({
@@ -118,7 +122,7 @@ async function handleTelegramMessage(server: FastifyInstance, deps: TelegramRout
     });
     await deps.telegramClient.sendMessage(
       chatId,
-      `I hit an error while processing that request: ${detail}`,
+      "I could not process that request. Please try again later.",
       message.message_id
     );
   }

@@ -33,7 +33,7 @@ export class CommunicationsHandler {
       await this.db.setIntegrationHealth({
         service: "slack",
         status: "error",
-        message: error instanceof Error ? error.message : "Unknown Slack error"
+        message: "Integration request failed"
       });
 
       throw error;

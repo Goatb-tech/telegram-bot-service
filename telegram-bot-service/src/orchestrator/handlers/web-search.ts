@@ -45,7 +45,7 @@ export class WebSearchHandler {
       await this.db.setIntegrationHealth({
         service: "web_search",
         status: "error",
-        message: error instanceof Error ? error.message : "Unknown web search error"
+        message: "Integration request failed"
       });
 
       throw error;

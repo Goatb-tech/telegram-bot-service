@@ -88,7 +88,7 @@ export class CalendarHandler {
       await this.db.setIntegrationHealth({
         service: "google_calendar",
         status: "error",
-        message: error instanceof Error ? error.message : "Unknown calendar error"
+        message: "Integration request failed"
       });
 
       throw error;

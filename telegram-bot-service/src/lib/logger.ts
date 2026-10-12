@@ -6,6 +6,7 @@ export function buildLoggerOptions(env: Env): FastifyServerOptions["logger"] {
   if (env.NODE_ENV === "development") {
     return {
       level: env.LOG_LEVEL,
+      redact: { paths: ["err", "error", "req.headers.authorization", "req.headers.cookie", "req.headers.x-telegram-bot-api-secret-token"], remove: true },
       transport: {
         target: "pino-pretty",
         options: {
@@ -17,6 +18,7 @@ export function buildLoggerOptions(env: Env): FastifyServerOptions["logger"] {
   }
 
   return {
-    level: env.LOG_LEVEL
+    level: env.LOG_LEVEL,
+    redact: { paths: ["err", "error", "req.headers.authorization", "req.headers.cookie", "req.headers.x-telegram-bot-api-secret-token"], remove: true }
   };
 }

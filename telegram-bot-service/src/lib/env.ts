@@ -22,7 +22,7 @@ const envSchema = z.object({
   OPENAI_ROUTER_MODEL: z.string().default("gpt-4.1-mini"),
   OPENAI_RESPONSE_MODEL: z.string().default("gpt-4.1-mini"),
   TELEGRAM_BOT_TOKEN: z.string().min(1, "TELEGRAM_BOT_TOKEN is required"),
-  TELEGRAM_WEBHOOK_SECRET: z.string().min(1).optional(),
+  TELEGRAM_WEBHOOK_SECRET: z.string().min(32).max(256).regex(/^[A-Za-z0-9_-]+$/),
   TELEGRAM_ALLOWED_USER_IDS: z.string().default(""),
   TELEGRAM_ALLOWED_CHAT_IDS: z.string().default(""),
   GOOGLE_CLIENT_ID: z.string().min(1).optional(),
